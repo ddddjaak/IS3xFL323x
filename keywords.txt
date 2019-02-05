@@ -1,0 +1,37 @@
+#######################################
+# Syntax Coloring Map For IS3xFL323x
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+IS3xFL323x	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+reset	KEYWORD2
+shutdown	KEYWORD2
+setFrequency	KEYWORD2
+update	KEYWORD2
+setPWM	KEYWORD2
+clearAll	KEYWORD2
+fadeAll	KEYWORD2
+displayDigit	KEYWORD2
+displayTime	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ADDRESS_REG	LITERAL1
+SHUTDOWN_REG	LITERAL1
+PWM_UPDATE_REG	LITERAL1
+GLOBAL_CONTORL_REG	LITERAL1
+OUTPUT_FREQ_REG	LITERAL1
+RESET_REG	LITERAL1
+FREQ_3KHZ	LITERAL1
+FREQ_22KHZ	LITERAL1
