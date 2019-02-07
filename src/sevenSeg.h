@@ -1,3 +1,7 @@
+// Prevent weirdness from including header more than once
+#ifndef __SEVENSEG_H
+#define __SEVENSEG_H
+
 #ifdef DEC // Prevent warnings if DEC is previously defined
 #undef DEC
 #endif
@@ -28,3 +32,6 @@
 const uint8_t sevenSegCharMap[16] = {
 	_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _A, _B, _C, _D, _E, _F
 };
+
+#endif
+// End of __SEVENSEG_H

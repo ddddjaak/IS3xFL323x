@@ -7,6 +7,8 @@
 #######################################
 
 IS3xFL323x	KEYWORD1
+FxSevenSeg	KEYWORD1
+FxRGB	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

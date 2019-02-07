@@ -9,7 +9,6 @@
 
 ArduinoI2C i2c;
 I2CInterface* IS3xFL323x::pI2CInterface = &i2c;
-// uint8_t IS3xFL323x::NPADATA[5] = { };
  
 // Constructor
 IS3xFL323x::IS3xFL323x()
@@ -55,6 +54,17 @@ void IS3xFL323x::update() {
   sendCommand(PWM_UPDATE_REG,0x00);//update PWM & control registers
 }
 
+// Update the PWM Control registers
+void IS3xFL323x::update(FxRGB leds) {
+  // for(uint8_t i=0; i<sizeof(leds)/sizeof(leds[0]); i++) {
+  for(uint8_t i=0; i<12; i++) {
+    setPWM(leds[i].redChannel, leds[i].r, 0);
+    setPWM(leds[i].greenChannel, leds[i].g, 0);
+    setPWM(leds[i].blueChannel, leds[i].b, 0);
+  }
+  sendCommand(PWM_UPDATE_REG,0x00);//update PWM & control registers
+}
+
 // Turn on a specific channel, full brightness
 void IS3xFL323x::on(uint8_t channel) {
   sendCommand(channel+0x25,0xff); // Enable channel
@@ -94,7 +104,7 @@ void IS3xFL323x::fadeAll(double delay) {
 }
 
 // Display a digit on a seven segment display
-void IS3xFL323x::displayDigit(uint8_t digits[][8], uint8_t digit, char value, bool flip) {
+void IS3xFL323x::displayDigit(FxSevenSeg digits, uint8_t digit, char value, bool flip) {
   uint8_t segment;
   uint8_t flipped[8] = {3, 4, 5, 0, 1, 2, 6, 7};
 
@@ -124,33 +134,10 @@ void IS3xFL323x::displayDigit(uint8_t digits[][8], uint8_t digit, char value, bo
 }
 
 // Display the time on a 4-digit seven segment display
-void IS3xFL323x::displayTime(uint8_t digits[][8], int hour, int minute, uint8_t format, bool flip, bool leadingZero) {
-  if(hour>(format-1))
-  {
-    displayDigit(digits, (flip) ? (3) : (0), sevenSegCharMap[hour/format], flip);
-    displayDigit(digits, (flip) ? (2) : (1), sevenSegCharMap[hour%format], flip);
-  } else
-  {
-    if (leadingZero)
-    {
-      displayDigit(digits, (flip) ? (3) : (0), sevenSegCharMap[0], flip);
-    }
-    displayDigit(digits, (flip) ? (2) : (1), sevenSegCharMap[hour], flip);
-  }
-
-  if(minute>(format-1))
-  {
-    displayDigit(digits, (flip) ? (1) : (2), sevenSegCharMap[minute/format], flip);
-    displayDigit(digits, (flip) ? (0) : (3), sevenSegCharMap[minute%format], flip);
-  }
-  else
-  {
-    if (leadingZero)
-    {
-      displayDigit(digits, (flip) ? (1) : (2), sevenSegCharMap[0], flip);
-    }
-    displayDigit(digits, (flip) ? (0) : (3), sevenSegCharMap[minute], flip);
-  }
+void IS3xFL323x::displayTime(FxSevenSeg digits, int hour, int minute, uint8_t format, bool flip, bool leadingZero) {
+  // Call twoDigitDisplay helper function
+  twoDigitDisplay(digits, false, hour, format, flip, leadingZero);
+  twoDigitDisplay(digits, true, minute, format, flip, leadingZero);
 }
  
 // Sends the I2C command to read data
@@ -174,4 +161,44 @@ uint8_t IS3xFL323x::sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat)
   // 3:received NACK on transmit of data
   // 4:other error
   return pI2CInterface->endTransmission();
+}
+
+// Helper function for two digit displays
+void IS3xFL323x::twoDigitDisplay(FxSevenSeg digits, bool isRightmostDigits, int value, uint8_t format, bool flip, bool leadingZero) {
+  uint8_t FIRST_DIGIT = 0;
+  uint8_t SECOND_DIGIT = 1;
+  uint8_t THIRD_DIGIT = 2;
+  uint8_t FOURTH_DIGIT = 3;
+
+  if(isRightmostDigits)
+  {
+    FIRST_DIGIT = 2;
+    SECOND_DIGIT = 3;
+    THIRD_DIGIT = 0;
+    FOURTH_DIGIT = 1;
+  }
+  
+  // If value is two digits in specifed number format
+  if(value>(format-1))
+  {
+    displayDigit(digits, (flip) ? (FOURTH_DIGIT) : (FIRST_DIGIT), sevenSegCharMap[value/format], flip);
+    displayDigit(digits, (flip) ? (THIRD_DIGIT) : (SECOND_DIGIT), sevenSegCharMap[value%format], flip);
+  }
+  // If value is one digit in specifed number format
+  else
+  {
+    // If leading zeros are enabled
+    if (leadingZero)
+    {
+      // Display a zero for left digit
+      displayDigit(digits, (flip) ? (FOURTH_DIGIT) : (FIRST_DIGIT), sevenSegCharMap[0], flip);
+    }
+    else
+    {
+      // Display nothing
+      displayDigit(digits, (flip) ? (FOURTH_DIGIT) : (FIRST_DIGIT), 0x00, flip);
+    }
+    // Display right digit
+    displayDigit(digits, (flip) ? (THIRD_DIGIT) : (SECOND_DIGIT), sevenSegCharMap[value], flip);
+  }
 }

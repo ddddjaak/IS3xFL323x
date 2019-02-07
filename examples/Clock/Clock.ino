@@ -4,7 +4,7 @@
 // Create an instance of IS3xFL323x called FxLED
 IS3xFL323x FxLED;
 
-uint8_t digits[4][8] {
+FxSevenSeg digits {
 /* Segment format:
   {A,  B,  C,  D,  E,  F,  G,  DP} */
   {1,  6,  7,  4,  3,  2,  5,  0},
