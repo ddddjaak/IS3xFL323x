@@ -7,8 +7,11 @@
 #######################################
 
 IS3xFL323x	KEYWORD1
-FxSevenSeg	KEYWORD1
+FxSevenSegDisplay	KEYWORD1
 FxRGB	KEYWORD1
+Digit	KEYWORD1
+RGB	KEYWORD1
+Pixel	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -24,16 +27,12 @@ clearAll	KEYWORD2
 fadeAll	KEYWORD2
 displayDigit	KEYWORD2
 displayTime	KEYWORD2
+setRGB	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
 ADDRESS_REG	LITERAL1
-SHUTDOWN_REG	LITERAL1
-PWM_UPDATE_REG	LITERAL1
-GLOBAL_CONTORL_REG	LITERAL1
-OUTPUT_FREQ_REG	LITERAL1
-RESET_REG	LITERAL1
 FREQ_3KHZ	LITERAL1
 FREQ_22KHZ	LITERAL1

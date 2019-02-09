@@ -2,9 +2,9 @@
 #include "IS3xFL323x.h"
 
 // Create an instance of IS3xFL323x called FxLED
-IS3xFL323x FxLED;
+IS3xFL323x FxLED(FL3236A);
 
-FxSevenSeg digits {
+FxSevenSegDisplay digits {
 /* Segment format:
   {A,  B,  C,  D,  E,  F,  G,  DP} */
   {1,  6,  7,  4,  3,  2,  5,  0},

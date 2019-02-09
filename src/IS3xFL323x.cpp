@@ -13,12 +13,44 @@ I2CInterface* IS3xFL323x::pI2CInterface = &i2c;
 // Constructor
 IS3xFL323x::IS3xFL323x()
 {
+}
 
+// Constructor
+IS3xFL323x::IS3xFL323x(Chipsets chipset)
+{
+  // switch(chipset)
+  // {
+  //   case FL3236:
+  //     #define IS_FL3236
+  //     break;
+  //   case FL3236A:
+  //     #define IS_FL3236A
+  //     break;
+  //   case FL3237:
+  //     #define IS_FL3237
+  //     break;
+  // }
+
+  // #ifndef IS_FL3236
+  // #ifndef HAS_FREQ_CONTROL
+  // #define HAS_FREQ_CONTROL
+  // #else
+  // #undef HAS_FREQ_CONTROL
+  // #endif
+  // #endif
+
+  // #ifdef IS_FL3237
+  // #ifndef HAS_PHASE_DELAY
+  // #define HAS_PHASE_DELAY
+  // #else
+  // #undef HAS_PHASE_DELAY
+  // #endif
+  // #endif
 }
 
 void IS3xFL323x::begin()
 {
-  for(uint8_t i=0x26;i<=0x49;i++)
+  for(uint8_t i=LED_CONTROL_REG_START;i<=LED_CONTROL_REG_START+0x23;i++)
   {
     sendCommand(i,0xff); // Enable all LED Control Registers
   }
@@ -42,12 +74,16 @@ void IS3xFL323x::shutdown(bool enable) {
   sendCommand(SHUTDOWN_REG,(enable) ? (0x00) : (0x01));
 }
 
+// #ifdef HAS_FREQ_CONTROL
 // Set the frequency of PWM output
-void IS3xFL323x::setFrequency(uint8_t frequency) {
+void IS3xFL323x::setPWMFrequency(uint8_t frequency) {
   if(frequency == FREQ_3KHZ || frequency == FREQ_22KHZ) {
     sendCommand(OUTPUT_FREQ_REG, frequency); // Set frequency
   }
 }
+// #else
+// #pragma GCC error "Function not available for chipset"
+// #endif
 
 // Update the PWM Control registers
 void IS3xFL323x::update() {
@@ -58,9 +94,9 @@ void IS3xFL323x::update() {
 void IS3xFL323x::update(FxRGB leds) {
   // for(uint8_t i=0; i<sizeof(leds)/sizeof(leds[0]); i++) {
   for(uint8_t i=0; i<12; i++) {
-    setPWM(leds[i].redChannel, leds[i].r, 0);
-    setPWM(leds[i].greenChannel, leds[i].g, 0);
-    setPWM(leds[i].blueChannel, leds[i].b, 0);
+    setPWM(leds[i].rChannel, leds[i].pixel.r, 0);
+    setPWM(leds[i].gChannel, leds[i].pixel.g, 0);
+    setPWM(leds[i].bChannel, leds[i].pixel.b, 0);
   }
   sendCommand(PWM_UPDATE_REG,0x00);//update PWM & control registers
 }
@@ -104,7 +140,7 @@ void IS3xFL323x::fadeAll(double delay) {
 }
 
 // Display a digit on a seven segment display
-void IS3xFL323x::displayDigit(FxSevenSeg digits, uint8_t digit, char value, bool flip) {
+void IS3xFL323x::displayDigit(FxSevenSegDisplay digits, uint8_t digit, char value, bool flip) {
   uint8_t segment;
   uint8_t flipped[8] = {3, 4, 5, 0, 1, 2, 6, 7};
 
@@ -133,12 +169,16 @@ void IS3xFL323x::displayDigit(FxSevenSeg digits, uint8_t digit, char value, bool
   }
 }
 
+#ifdef HAS_FREQ_CONTROL
 // Display the time on a 4-digit seven segment display
-void IS3xFL323x::displayTime(FxSevenSeg digits, int hour, int minute, uint8_t format, bool flip, bool leadingZero) {
+void IS3xFL323x::displayTime(FxSevenSegDisplay digits, int hour, int minute, uint8_t format, bool flip, bool leadingZero) {
   // Call twoDigitDisplay helper function
   twoDigitDisplay(digits, false, hour, format, flip, leadingZero);
   twoDigitDisplay(digits, true, minute, format, flip, leadingZero);
 }
+#else
+#pragma GCC error "Function not available for chipset"
+#endif
  
 // Sends the I2C command to read data
 // Returns the status of the transmission
@@ -147,7 +187,7 @@ uint8_t IS3xFL323x::sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat)
   // Begin transmission
   // The NPA 201 slave address is 0x27(HEX)
   // This address can be changed if required as per AAS-910-290
-  pI2CInterface->beginTransmission(ADDRESS_REG/2);
+  pI2CInterface->beginTransmission(ADDRESS_REG);
   // Send the command read full measurement data
   // 0xAC(HEX) is the command byte to read data
   // It is the only command supported by the NPA 201
@@ -164,7 +204,7 @@ uint8_t IS3xFL323x::sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat)
 }
 
 // Helper function for two digit displays
-void IS3xFL323x::twoDigitDisplay(FxSevenSeg digits, bool isRightmostDigits, int value, uint8_t format, bool flip, bool leadingZero) {
+void IS3xFL323x::twoDigitDisplay(FxSevenSegDisplay digits, bool isRightmostDigits, int value, uint8_t format, bool flip, bool leadingZero) {
   uint8_t FIRST_DIGIT = 0;
   uint8_t SECOND_DIGIT = 1;
   uint8_t THIRD_DIGIT = 2;

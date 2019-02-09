@@ -39,13 +39,13 @@ public:
 	/**
 	 * available() returns the number of bytes available for retrieval with read()
 	 */
-	int available(void);
+	// int available(void);
 	
 	/**
 	 * read() reads a byte that was transmitted from a slave device to a master after a call to requestFrom()
 	 * or was transmitted from a master to a slave
 	 */
-	int read(void);
+	// int read(void);
 
 	/**
 	 * write() writes data from a slave device in response to a request from a master,
@@ -58,12 +58,12 @@ public:
 	 * requestFrom() is used by the I2C master to request bytes from a slave device
 	 * The bytes may then be retrieved with the available() and read() functions
 	 */
-	uint8_t requestFrom(uint8_t address, uint8_t quantity);
+	// uint8_t requestFrom(uint8_t address, uint8_t quantity);
 
 	/**
 	 * wait() waits the specified number of milliseconds
 	 */
-	void wait(uint16_t milliseconds);
+	// void wait(uint16_t milliseconds);
 };
 
 #endif // ARDUINO_I2C

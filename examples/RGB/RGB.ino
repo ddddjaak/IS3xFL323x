@@ -19,18 +19,6 @@ FxRGB leds {
   {29, 28, 30}, // D49
   {32, 31, 33}, // D50
   {35, 34, 36}  // D51
-//  {2,  1,  3,0,0,0},  // D40
-//  {5,  4,  6,0,0,0},  // D41
-//  {8,  7,  9,0,0,0},  // D42
-//  {11, 10, 12,0,0,0}, // D43
-//  {14, 13, 15,0,0,0}, // D44
-//  {17, 16, 18,0,0,0}, // D45
-//  {20, 19, 21,0,0,0}, // D46
-//  {23, 22, 24,0,0,0}, // D47
-//  {26, 25, 27,0,0,0}, // D48
-//  {29, 28, 30,0,0,0}, // D49
-//  {32, 31, 33,0,0,0}, // D50
-//  {35, 34, 36,0,0,0}  // D51
 };
 
 #define NUM_LEDS sizeof(leds)/sizeof(leds[0])
@@ -40,37 +28,49 @@ void setup() {
 }
 
 void loop() {
-//  // Iterate over each set of LEDS (RGB)
+//  // Display red, green, then blue on all LEDs one at a time
 //  for(uint8_t i=0; i<NUM_LEDS; i++) {
 //    leds[i] = RGB::Red;
 //    FxLED.update(leds);
-//    delay(200); // Delay 200ms
+//    delay(50); // Delay 50ms
 //  }
 //  for(uint8_t i=0; i<NUM_LEDS; i++) {
 //    leds[i] = RGB::Green;
 //    FxLED.update(leds);
-//    delay(200); // Delay 200ms
+//    delay(50); // Delay 50ms
 //  }
 //  for(uint8_t i=0; i<NUM_LEDS; i++) {
 //    leds[i] = RGB::Blue;
 //    FxLED.update(leds);
-//    delay(200); // Delay 200ms
+//    delay(50); // Delay 50ms
 //  }
 
-  for(int j=0; j<64; j++) {
-    for(uint8_t i=0; i<NUM_LEDS; i++) {
-      leds[i].red = pgm_read_byte(&PWM_Gamma64[j]);
-      leds[i].green = pgm_read_byte(&PWM_Gamma64[j]);
-      leds[i].blue = pgm_read_byte(&PWM_Gamma64[j]);
-      FxLED.update(leds);
-    }
-  }
-  for(int k=63; k>=0; k--) {
-    for(uint8_t i=0; i<NUM_LEDS; i++) {
-      leds[i].red = pgm_read_byte(&PWM_Gamma64[k]);
-      leds[i].green = pgm_read_byte(&PWM_Gamma64[k]);
-      leds[i].blue = pgm_read_byte(&PWM_Gamma64[k]);
-      FxLED.update(leds);
-    }
+//  // Display a random color on all LEDs one at a time
+//  uint8_t redValue = random(0, 256);
+//  uint8_t greenValue = random(0, 256);
+//  uint8_t blueValue = random(0, 256);
+//  for(uint8_t i=0; i<NUM_LEDS; i++) {
+////    leds[0].r(redValue);
+////    leds[i].pixel.g = greenValue;
+////    leds[i].pixel.b = blueValue;
+////    leds[i].setRGB(redValue, greenValue, blueValue);
+//    leds[i] = RGB(redValue, greenValue, blueValue);
+//    FxLED.update(leds);
+//    delay(25); // Delay 25ms
+//  }
+
+  // Copy LED values, middle out
+  uint8_t redValue = random(0, 256);
+  uint8_t greenValue = random(0, 256);
+  uint8_t blueValue = random(0, 256);
+  leds[5] = RGB(redValue, greenValue, blueValue);
+  leds[6] = leds[5];
+  FxLED.update(leds);
+  delay(50); // Delay 50ms
+  for(uint8_t i=1; i<NUM_LEDS/2; i++) {
+    leds[5-i] = leds[5];
+    leds[6+i] = leds[5];
+    FxLED.update(leds);
+    delay(50); // Delay 50ms
   }
 }

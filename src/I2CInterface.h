@@ -40,7 +40,7 @@ public:
    *
    * @return the number of bytes available for reading
    */
-  virtual int available(void) = 0;
+  // virtual int available(void) = 0;
 
   /**
    * Reads a byte that was transmitted from a slave device to a master after a call to requestFrom()
@@ -48,7 +48,7 @@ public:
    *
    * @return the next byte received
    */
-  virtual int read(void) = 0;
+  // virtual int read(void) = 0;
 
   /**
    * Writes data from a slave device in response to a request from a master,
@@ -67,14 +67,14 @@ public:
    * @param quantity - The number of bytes to request
    * @return the number of bytes returned from the slave device
    */
-  virtual uint8_t requestFrom(uint8_t address, uint8_t quantity) = 0;
+  // virtual uint8_t requestFrom(uint8_t address, uint8_t quantity) = 0;
 
   /**
    * An implementation of delay
    *
    * @param milliseconds - The number of milliseconds to delay
    */
-  virtual void wait(uint16_t milliseconds) = 0;
+  // virtual void wait(uint16_t milliseconds) = 0;
 };
 
 #endif  // I2C_INTERFACE_H_
