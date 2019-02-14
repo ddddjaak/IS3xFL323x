@@ -1,8 +1,8 @@
-// Include the IS3xFL323x library
-#include "IS3xFL323x.h"
+// Include the FxLED library
+#include "FxLED.h"
 
-// Create an instance of IS3xFL323x called FxLED
-IS3xFL323x FxLED;
+// Create an instance of an IS31FL3236A controller called FxLED
+FL3236A FxLED;
 
 FxRGB leds {
 /* RGB LED format:
@@ -25,6 +25,7 @@ FxRGB leds {
 
 void setup() {
   FxLED.begin(); // Initialize
+  FxLED.setPWMFrequency(FREQ_22KHZ);
 }
 
 void loop() {

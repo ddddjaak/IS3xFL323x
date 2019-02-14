@@ -1,11 +1,11 @@
 /*
-  IS3xFL323x.cpp - Library for interfacing with the ISSI IS3xFL323x Family of FxLED Drivers
+  FxLED.cpp - Library for interfacing with the ISSI IS3xFL323x Family of FxLED Drivers
   http://ams.issi.com/US/product-analog-fxled-driver.shtml
   Created by stephen.harper@noctivore.com
 */
  
 // Include headers
-#include "IS3xFL323x.h"
+#include "FxLED.h"
 
 ArduinoI2C i2c;
 I2CInterface* IS3xFL323x::pI2CInterface = &i2c;
@@ -13,39 +13,6 @@ I2CInterface* IS3xFL323x::pI2CInterface = &i2c;
 // Constructor
 IS3xFL323x::IS3xFL323x()
 {
-}
-
-// Constructor
-IS3xFL323x::IS3xFL323x(Chipsets chipset)
-{
-  // switch(chipset)
-  // {
-  //   case FL3236:
-  //     #define IS_FL3236
-  //     break;
-  //   case FL3236A:
-  //     #define IS_FL3236A
-  //     break;
-  //   case FL3237:
-  //     #define IS_FL3237
-  //     break;
-  // }
-
-  // #ifndef IS_FL3236
-  // #ifndef HAS_FREQ_CONTROL
-  // #define HAS_FREQ_CONTROL
-  // #else
-  // #undef HAS_FREQ_CONTROL
-  // #endif
-  // #endif
-
-  // #ifdef IS_FL3237
-  // #ifndef HAS_PHASE_DELAY
-  // #define HAS_PHASE_DELAY
-  // #else
-  // #undef HAS_PHASE_DELAY
-  // #endif
-  // #endif
 }
 
 void IS3xFL323x::begin()
@@ -74,16 +41,16 @@ void IS3xFL323x::shutdown(bool enable) {
   sendCommand(SHUTDOWN_REG,(enable) ? (0x00) : (0x01));
 }
 
-// #ifdef HAS_FREQ_CONTROL
-// Set the frequency of PWM output
-void IS3xFL323x::setPWMFrequency(uint8_t frequency) {
-  if(frequency == FREQ_3KHZ || frequency == FREQ_22KHZ) {
-    sendCommand(OUTPUT_FREQ_REG, frequency); // Set frequency
-  }
-}
-// #else
-// #pragma GCC error "Function not available for chipset"
-// #endif
+// // #ifdef HAS_FREQ_CONTROL
+// // Set the frequency of PWM output
+// void IS3xFL323x::setPWMFrequency(uint8_t frequency) {
+//   if(frequency == FREQ_3KHZ || frequency == FREQ_22KHZ) {
+//     sendCommand(OUTPUT_FREQ_REG, frequency); // Set frequency
+//   }
+// }
+// // #else
+// // #pragma GCC error "Function not available for chipset"
+// // #endif
 
 // Update the PWM Control registers
 void IS3xFL323x::update() {
@@ -119,7 +86,7 @@ void IS3xFL323x::setPWM(uint8_t channel, uint8_t value, double delay) {
 }
 
 // Clear all channels
-void IS3xFL323x::clearAll() {
+void IS3xFL323x::clear() {
   for(uint8_t i=0x01;i<=0x24;i++)
   {
     sendCommand(i,0x00); // Set all PWM Registers to 0x00
@@ -169,16 +136,16 @@ void IS3xFL323x::displayDigit(FxSevenSegDisplay digits, uint8_t digit, char valu
   }
 }
 
-#ifdef HAS_FREQ_CONTROL
+// #ifdef HAS_FREQ_CONTROL
 // Display the time on a 4-digit seven segment display
 void IS3xFL323x::displayTime(FxSevenSegDisplay digits, int hour, int minute, uint8_t format, bool flip, bool leadingZero) {
   // Call twoDigitDisplay helper function
   twoDigitDisplay(digits, false, hour, format, flip, leadingZero);
   twoDigitDisplay(digits, true, minute, format, flip, leadingZero);
 }
-#else
-#pragma GCC error "Function not available for chipset"
-#endif
+// #else
+// #pragma GCC error "Function not available for chipset"
+// #endif
  
 // Sends the I2C command to read data
 // Returns the status of the transmission
@@ -240,5 +207,11 @@ void IS3xFL323x::twoDigitDisplay(FxSevenSegDisplay digits, bool isRightmostDigit
     }
     // Display right digit
     displayDigit(digits, (flip) ? (THIRD_DIGIT) : (SECOND_DIGIT), sevenSegCharMap[value], flip);
+  }
+}
+
+void FL3236A::setPWMFrequency(uint8_t frequency) {
+  if(frequency == FREQ_3KHZ || frequency == FREQ_22KHZ) {
+    sendCommand(OUTPUT_FREQ_REG, frequency); // Set frequency
   }
 }

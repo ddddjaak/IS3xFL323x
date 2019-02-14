@@ -1,8 +1,8 @@
-// Include the IS3xFL323x library
-#include "IS3xFL323x.h"
+// Include the FxLED library
+#include "FxLED.h"
 
-// Create an instance of IS3xFL323x called FxLED
-IS3xFL323x FxLED(FL3236A);
+// Create an instance of an IS31FL3236A controller called FxLED
+FL3236A FxLED;
 
 FxSevenSegDisplay digits {
 /* Segment format:
@@ -37,12 +37,12 @@ void loop() {
   delay(1000);
 }
 
-unsigned long minutes() {
-  unsigned long minutes = (millis()/60000)%60;
+int minutes() {
+  int minutes = (millis()/60000)%60;
   return minutes;
 }
 
-unsigned long seconds() {
-  unsigned long seconds = (millis()/1000)%60;
+int seconds() {
+  int seconds = (millis()/1000)%60;
   return seconds;
 }
