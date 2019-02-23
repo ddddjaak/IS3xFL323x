@@ -1,6 +1,6 @@
 /*
-  ArduinoI2C.cpp - Implements functions required by I2CInterface for NPA 201 communication
-  Created by operator@noctivore.com
+  ArduinoI2C.cpp - Implements functions required by I2CInterface
+  Created by stephen.harper@noctivore.com
 */
 
 // Include headers

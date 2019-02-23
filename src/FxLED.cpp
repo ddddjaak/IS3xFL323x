@@ -7,7 +7,9 @@
 // Include headers
 #include "FxLED.h"
 
+#ifdef USE_AVR
 ArduinoI2C i2c;
+#endif
 I2CInterface* IS3xFL323x::pI2CInterface = &i2c;
  
 // Constructor
@@ -15,16 +17,24 @@ IS3xFL323x::IS3xFL323x()
 {
 }
 
-void IS3xFL323x::begin()
+void IS3xFL323x::begin(uint8_t AD)
 {
-  for(uint8_t i=LED_CONTROL_REG_START;i<=LED_CONTROL_REG_START+0x23;i++)
-  {
-    sendCommand(i,0xff); // Enable all LED Control Registers
-  }
-  for(uint8_t i=0x01;i<=0x24;i++)
-  {
-    sendCommand(i,0x00); // Set all PWM Registers to 0x00
-  }
+  AD_BITS = AD;
+  sendCommandAuto(LED_CONTROL_REG_START, LED_CONTROL_REG_START+0x23, 0xFF);
+  // pI2CInterface->beginTransmission(ADDRESS_REG+AD_BITS);
+  // pI2CInterface->write(LED_CONTROL_REG_START);
+  // for(uint8_t i=LED_CONTROL_REG_START;i<=LED_CONTROL_REG_START+0x23;i++)
+  // {
+  //   // sendCommand(i,0xFF); // Enable all LED Control Registers
+  //   pI2CInterface->write(0xFF);
+  // }
+  sendCommandAuto(0x01, 0x24, 0x00);
+  // pI2CInterface->write(0x01);
+  // for(uint8_t i=0x01;i<=0x24;i++)
+  // {
+  //   // sendCommand(i,0x00); // Set all PWM Registers to 0x00
+  //   pI2CInterface->write(0x00);
+  // }
 
   sendCommand(PWM_UPDATE_REG,0x00); // Write PWM Update Registers
   sendCommand(OUTPUT_FREQ_REG,0x01); // Set frequency to 22KHz
@@ -70,7 +80,7 @@ void IS3xFL323x::update(FxRGB leds) {
 
 // Turn on a specific channel, full brightness
 void IS3xFL323x::on(uint8_t channel) {
-  sendCommand(channel+0x25,0xff); // Enable channel
+  sendCommand(channel+0x25,0xFF); // Enable channel
   setPWM(channel);
 }
 
@@ -97,10 +107,11 @@ void IS3xFL323x::clear() {
 void IS3xFL323x::fadeAll(double delay) {
   for (int8_t i=63; i>=0; i--)//all LED breath falling
   {
-    for(uint8_t j=1; j<37; j++)
+    for(uint8_t j=0x01; j<=0x24; j++)
     {
       sendCommand(j, pgm_read_byte(&PWM_Gamma64[i]));//set all PWM
     }
+    // sendCommandAuto(0x01, 0x24, pgm_read_byte(&PWM_Gamma64[i]));
     update();
     _delay_ms(delay);
   }
@@ -126,7 +137,7 @@ void IS3xFL323x::displayDigit(FxSevenSegDisplay digits, uint8_t digit, char valu
     // If corresponding bit of value is 1 and segment is not disabled (0)
     if(((value >> i) & 1) && (segment != 0))
     {
-      sendCommand(segment+0x25,0xff); // Enable channel
+      sendCommand(segment+0x25,0xFF); // Enable channel
       setPWM(segment, 0x3F, 0);
     }
     else if(segment != 0)
@@ -152,14 +163,27 @@ void IS3xFL323x::displayTime(FxSevenSegDisplay digits, int hour, int minute, uin
 uint8_t IS3xFL323x::sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat)
 {
   // Begin transmission
-  // The NPA 201 slave address is 0x27(HEX)
-  // This address can be changed if required as per AAS-910-290
-  pI2CInterface->beginTransmission(ADDRESS_REG);
-  // Send the command read full measurement data
-  // 0xAC(HEX) is the command byte to read data
-  // It is the only command supported by the NPA 201
+  pI2CInterface->beginTransmission(ADDRESS_REG+AD_BITS);
   pI2CInterface->write(Reg_Add);
   pI2CInterface->write(Reg_Dat);
+  // End the transmission (stop transmitting)
+  // return the status of the transmission
+  // 0:success
+  // 1:data too long to fit in transmit buffer
+  // 2:received NACK on transmit of address
+  // 3:received NACK on transmit of data
+  // 4:other error
+  return pI2CInterface->endTransmission();
+}
+
+uint8_t IS3xFL323x::sendCommandAuto(uint8_t Reg_Add_Start, uint8_t Reg_Add_Stop, uint8_t Reg_Dat)
+{
+  pI2CInterface->beginTransmission(ADDRESS_REG+AD_BITS);
+  pI2CInterface->write(Reg_Add_Start);
+  for(uint8_t i=Reg_Add_Start; i<=Reg_Add_Stop; i++)
+  {
+  	pI2CInterface->write(Reg_Dat);
+  }
   // End the transmission (stop transmitting)
   // return the status of the transmission
   // 0:success

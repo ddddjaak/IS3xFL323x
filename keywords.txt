@@ -28,6 +28,7 @@ fadeAll	KEYWORD2
 displayDigit	KEYWORD2
 displayTime	KEYWORD2
 setRGB	KEYWORD2
+setPWMFrequency	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

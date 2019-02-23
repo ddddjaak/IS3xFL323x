@@ -2,7 +2,13 @@
 #ifndef __GAMMA_H
 #define __GAMMA_H
 
-const uint8_t PROGMEM PWM_Gamma64[64]=
+// #define USE_PROGMEM
+
+#ifdef USE_PROGMEM
+const uint8_t PWM_Gamma64[64] PROGMEM =
+#else
+const uint8_t PWM_Gamma64[64] =
+#endif
 {
   0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
   0x08,0x0A,0x0C,0x0E,0x10,0x12,0x14,0x16,

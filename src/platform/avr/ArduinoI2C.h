@@ -1,6 +1,6 @@
 /*
-  ArduinoI2C.h - Extends I2CInterface class which contains required functions for NPA 201 communication
-  Created by operator@noctivore.com
+  ArduinoI2C.h - Extends I2CInterface class
+  Created by stephen.harper@noctivore.com
 */
 
 // Prevent weirdness from including header more than once

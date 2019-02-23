@@ -8,26 +8,24 @@
 #ifndef __FXLED_H
 #define __FXLED_H
  
-// Include I2C implementation header
-#include "platform/avr/ArduinoI2C.h"
+#include "platform/config.h"
 
 // #include "chipsets.h"
 #include "structures.h"
 #include "gamma.h"
-#include "sevenSeg.h"
  
 // Define addresses
 #define SHUTDOWN_REG          0x00
 #ifdef FL3237
 #define ADDRESS_REG           0x34
 #define PWM_UPDATE_REG        0x25
-#define LED_CONTROL_REG_START  0x4A
+#define LED_CONTROL_REG_START 0x4A
 #define GLOBAL_CONTORL_REG    0x6E
 #define RESET_REG             0x7F
 #else
 #define ADDRESS_REG           0x3C
 #define PWM_UPDATE_REG        0x25
-#define LED_CONTROL_REG_START  0x26
+#define LED_CONTROL_REG_START 0x26
 #define GLOBAL_CONTORL_REG    0x4A
 #define RESET_REG             0x4F
 #endif
@@ -41,7 +39,7 @@ class IS3xFL323x
 {
   public:
     IS3xFL323x(); // Constructor
-    void begin();
+    void begin(uint8_t AD=0x00);
     void reset();
     void shutdown(bool enable=true);
     void update();
@@ -54,10 +52,12 @@ class IS3xFL323x
     void displayDigit(FxSevenSegDisplay digits, uint8_t digit, char value, bool flip=false);
     void displayTime(FxSevenSegDisplay digits, int hour, int minute, uint8_t format=DEC, bool flip=false, bool leadingZero=true);
   protected:
-    uint8_t sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat); // Sends the I2C command to read data
+    uint8_t sendCommand(uint8_t Reg_Add, uint8_t Reg_Dat);
+    uint8_t sendCommandAuto(uint8_t Reg_Add_Start, uint8_t Reg_Add_Stop, uint8_t Reg_Dat);
     void twoDigitDisplay(FxSevenSegDisplay digits, bool isRightmostDigits, int value, uint8_t format=DEC, bool flip=false, bool leadingZero=true);
   private:
     static I2CInterface* pI2CInterface; // Pointer to the I2CInterface implementation
+    uint8_t AD_BITS=0x00;
 };
 
 class FL3236 : public IS3xFL323x
