@@ -11,7 +11,7 @@ FxSevenSegDisplay digits {
   {11, 16, 17, 14, 13, 12, 15, 0},
   {20, 25, 26, 23, 22, 21, 24, 0},
   {30, 35, 36, 33, 32, 31, 34, 0}
-};
+}; 
 
 void setup() {
   FxLED.begin(); // Initialize
